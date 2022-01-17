@@ -18,22 +18,37 @@ public class Developer extends AbstractUser {
     @Override
     void executeInput(String input) {
         switch (input) {
-            case "1":
-                addGame();
-                break;
-            case "2":
-                editPrice();
-                break;
-            case "3":
-                System.exit(0);
-            default:
+            case "1" -> addGame();
+            case "2" -> editPrice();
+            case "3" -> System.exit(0);
+            default -> {
                 System.out.println("No such command");
                 printOptions();
+            }
         }
     }
 
     private void editPrice() {
-        //TODO
+        try {
+            String gameTitle = null;
+            while(gameTitle == null){
+                gameTitle = getGameTitle();
+                if (gameTitle == null) {
+                    System.out.println("There is no such game");
+                }
+            }
+            System.out.println("Specify new price: ");
+            String price = reader.readLine();
+            PreparedStatement stmt = connection.prepareStatement("UPDATE games SET price = ? WHERE title = ?");
+            stmt.setString(1, price);
+            stmt.setString(2, gameTitle);
+            stmt.executeUpdate();
+
+            printOptions();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void addGame() {
@@ -45,6 +60,7 @@ public class Developer extends AbstractUser {
                     System.out.println("There is already such game");
                 }
             }
+
             printTable("developers");
             System.out.println("Give the developer id: ");
             String dev_id = reader.readLine();
@@ -56,13 +72,14 @@ public class Developer extends AbstractUser {
             String gen_id = reader.readLine();
             System.out.println("Specify the price: ");
             String price = reader.readLine();
+
             PreparedStatement stmt = connection.prepareStatement("INSERT INTO games VALUE (?,?,?,?,?)");
             stmt.setString(1, gameTitle);
             stmt.setString(2, dev_id);
             stmt.setString(3, pub_id);
             stmt.setString(4, gen_id);
             stmt.setString(5, price);
-            ResultSet rs = stmt.executeQuery();
+            stmt.executeUpdate();
 
             printOptions();
         } catch (Exception e) {
