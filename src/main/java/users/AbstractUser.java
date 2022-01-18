@@ -33,7 +33,7 @@ public abstract class AbstractUser {
         try {
             System.out.println("Specify game title: ");
             String title = reader.readLine();
-            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Game WHERE title = ?");
+            CallableStatement stmt = this.connection.prepareCall("{call getGameByTitle(?)}");
             stmt.setString(1, title);
             ResultSet rs = stmt.executeQuery();
             String dummy = "";
@@ -70,7 +70,7 @@ public abstract class AbstractUser {
                 System.out.println(row);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("No such table");
         }
     }
 }

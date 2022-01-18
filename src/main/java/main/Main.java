@@ -3,6 +3,7 @@ package main;
 import database.DBConnector;
 import users.Admin;
 import users.Customer;
+import users.Developer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -42,9 +43,7 @@ public class Main {
         //TODO check if login and password correct
         //TODO check what type is the user and create correct instance
         //TODO setUser_id
-        Admin admin = new Admin();
-        admin.printOptions();
-        /*Customer customer = new Customer();
-        customer.printOptions();*/
+        Developer developer = new Developer();
+        developer.printOptions();
     }
 }

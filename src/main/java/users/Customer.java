@@ -90,6 +90,8 @@ public class Customer extends AbstractUser {
             stmt.setString(1, gameTitle);
             stmt.setInt(2,user_id);
             stmt.executeQuery();
+
+            printOptions();
         }
         catch (Exception e) {
             e.printStackTrace();

@@ -13,7 +13,7 @@ public class Developer extends AbstractUser {
     }
 
     @Override
-    void printOptions(){
+    public void printOptions(){
         System.out.println("1. Add new game\n2. Delete game\n3. Edit price of game\n4. Edit game\n5. Exit");
         try {
             executeInput(reader.readLine());
@@ -76,7 +76,7 @@ public class Developer extends AbstractUser {
         String name = getDevName();
         int id = -1;
         try {
-            CallableStatement stmt = this.connection.prepareCall("{call getDevById(?)}");
+            CallableStatement stmt = this.connection.prepareCall("{call getDevByName(?)}");
             stmt.setString(1, name);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -167,12 +167,9 @@ public class Developer extends AbstractUser {
 
     private void addGame() {
         try {
-            String gameTitle = "dummy";
-            while (gameTitle != null) {
-                gameTitle = getGameTitle();
-                if (gameTitle != null) {
-                    System.out.println("There is already such game");
-                }
+            String gameTitle = null;
+            while (gameTitle == null) {
+                gameTitle = makeNewTitle();
             }
 
             printTable("Publisher");
@@ -208,5 +205,26 @@ public class Developer extends AbstractUser {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private String makeNewTitle() {
+        String title = null;
+        try {
+            System.out.println("Specify game title: ");
+            title = reader.readLine();
+            CallableStatement stmt = this.connection.prepareCall("{call getGameByTitle(?)}");
+            stmt.setString(1, title);
+            ResultSet rs = stmt.executeQuery();
+            String dummy = "";
+            while(rs.next()) {
+                dummy = rs.getString("title");
+            }
+            if (dummy.equals("")) {
+                return title;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
