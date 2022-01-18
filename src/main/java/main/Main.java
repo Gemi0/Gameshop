@@ -1,6 +1,7 @@
 package main;
 
 import database.DBConnector;
+import users.Admin;
 import users.Customer;
 
 import java.io.BufferedReader;
@@ -40,7 +41,10 @@ public class Main {
         String password = reader.readLine();
         //TODO check if login and password correct
         //TODO check what type is the user and create correct instance
-        Customer customer = new Customer();
-        customer.printOptions();
+        //TODO setUser_id
+        Admin admin = new Admin();
+        admin.printOptions();
+        /*Customer customer = new Customer();
+        customer.printOptions();*/
     }
 }

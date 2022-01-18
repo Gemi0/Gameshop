@@ -1,6 +1,7 @@
 package users;
 
 import java.io.IOException;
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -41,7 +42,7 @@ public class Developer extends AbstractUser {
         String gameTitle = getGameTitle();
         int id_from_query =-1;
         try {
-            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Game WHERE title = ?");
+            CallableStatement stmt = this.connection.prepareCall("{call getGameByTitle(?)}");
             stmt.setString(1, gameTitle);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -59,7 +60,7 @@ public class Developer extends AbstractUser {
     private String getDevName() {
         String name ="";
         try {
-            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM User WHERE id = ?");
+            CallableStatement stmt = this.connection.prepareCall("{call getUserById(?)}");
             stmt.setInt(1, user_id);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -75,7 +76,7 @@ public class Developer extends AbstractUser {
         String name = getDevName();
         int id = -1;
         try {
-            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Developer WHERE name = ?");
+            CallableStatement stmt = this.connection.prepareCall("{call getDevById(?)}");
             stmt.setString(1, name);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -105,10 +106,11 @@ public class Developer extends AbstractUser {
             System.out.println("Specify the new price: ");
             int price = Integer.parseInt(reader.readLine());
 
-            PreparedStatement stmt = connection.prepareStatement("UPDATE Game SET title = ?, price = ?, id_publisher = ? WHERE title = ?");
+            CallableStatement stmt = this.connection.prepareCall("{call editGame(?,?,?,?)}");
             stmt.setString(1, new_title);
             stmt.setInt(3, pub_id);
             stmt.setInt(2, price);
+            stmt.setString(4,gameTitle);
             stmt.executeUpdate();
 
             printOptions();
@@ -129,9 +131,9 @@ public class Developer extends AbstractUser {
                     System.out.println("You are not developer of such game");
                 }
             }
-            PreparedStatement stmt = connection.prepareStatement("DELETE FROM Game where title = ?");
+            CallableStatement stmt = this.connection.prepareCall("{call deleteGame(?)}");
             stmt.setString(1, gameTitle);
-            stmt.executeUpdate();
+            stmt.execute();
 
             printOptions();
         }
@@ -151,7 +153,7 @@ public class Developer extends AbstractUser {
             }
             System.out.println("Specify new price: ");
             String price = reader.readLine();
-            PreparedStatement stmt = connection.prepareStatement("UPDATE Game SET price = ? WHERE title = ?");
+            CallableStatement stmt = this.connection.prepareCall("{call editPrice(?)}");
             stmt.setString(1, price);
             stmt.setString(2, gameTitle);
             stmt.executeUpdate();
@@ -182,14 +184,14 @@ public class Developer extends AbstractUser {
             System.out.println("Specify the price: ");
             int price = Integer.parseInt(reader.readLine());
 
-            PreparedStatement stmt = connection.prepareStatement("INSERT INTO Game VALUE (DEFAULT,?,?,?,?)");
+            CallableStatement stmt = this.connection.prepareCall("{call addGame(?,?,?,?)}");
             stmt.setString(1, gameTitle);
             stmt.setInt(2, getDevId());
             stmt.setString(3, pub_id);
             stmt.setInt(4, price);
             stmt.executeUpdate();
 
-            stmt = connection.prepareStatement("SELECT * FROM Game WHERE title = ?");
+            stmt = this.connection.prepareCall("{call getGameByTitle(?)}");
             stmt.setString(1, gameTitle);
             ResultSet rs = stmt.executeQuery();
             int game_id = -1;
@@ -197,7 +199,7 @@ public class Developer extends AbstractUser {
                 game_id = rs.getInt("id");
             }
 
-            stmt = connection.prepareStatement("INSERT INTO Game_genre VALUE (?,?)");
+            stmt = this.connection.prepareCall("{call insertGenre(?,?)}");
             stmt.setInt(1, game_id);
             stmt.setInt(1, gen_id);
             stmt.executeUpdate();

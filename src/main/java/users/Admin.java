@@ -1,7 +1,9 @@
 package users;
 
 import java.io.IOException;
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class Admin extends AbstractUser{
     @Override
@@ -10,7 +12,7 @@ public class Admin extends AbstractUser{
     }
 
     @Override
-    void printOptions() {
+    public void printOptions() {
         System.out.println("1. View table\n2. Delete game\n3. Figure inflation in prices \n4. Exit");
         try {
             executeInput(reader.readLine());
@@ -34,7 +36,15 @@ public class Admin extends AbstractUser{
     }
 
     private void figureInflation() {
-        //TODO using transaction/procedure
+        try {
+            System.out.println("How big is the inflation (give input in format: 1.05): ");
+            float inf = Float.parseFloat(reader.readLine());
+            CallableStatement cs = this.connection.prepareCall("{call figureInflation(?)}");
+            cs.setFloat(1,inf);
+            cs.executeQuery();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void deleteGame() {
@@ -46,7 +56,7 @@ public class Admin extends AbstractUser{
                     System.out.println("There is no such game");
                 }
             }
-            PreparedStatement stmt = connection.prepareStatement("DELETE FROM Game where title = ?");
+            CallableStatement stmt = this.connection.prepareCall("{call deleteGame(?)}");
             stmt.setString(1, gameTitle);
             stmt.execute();
 
