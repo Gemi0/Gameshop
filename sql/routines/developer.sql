@@ -1,5 +1,5 @@
 #####################################################################
-# Gameshop database user entity routines                            #
+# Gameshop database developer entity routines                       #
 # Authors: Maciej Bazela 261743                                     #
 #          Dominik Gorgosch 261701                                  #
 # Below code will generate all routines needed for developer entity.#
