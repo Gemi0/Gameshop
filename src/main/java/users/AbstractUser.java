@@ -6,6 +6,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class AbstractUser {
 
@@ -20,7 +22,9 @@ public abstract class AbstractUser {
             e.printStackTrace();
         }
     }
+    int user_id;
 
+    abstract void setUser_id();
     abstract void printOptions();
 
     abstract void executeInput(String input);
@@ -29,12 +33,12 @@ public abstract class AbstractUser {
         try {
             System.out.println("Specify game title: ");
             String title = reader.readLine();
-            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM aparat WHERE model = ?");
+            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Game WHERE title = ?");
             stmt.setString(1, title);
             ResultSet rs = stmt.executeQuery();
             String dummy = "";
             while(rs.next()) {
-                dummy = rs.getString("model");
+                dummy = rs.getString("title");
             }
             if (dummy.equals(title)) {
                 return title;

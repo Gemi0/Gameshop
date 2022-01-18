@@ -3,11 +3,17 @@ package users;
 import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class Developer extends AbstractUser {
     @Override
+    void setUser_id() {
+        //TODO set this while creating user
+    }
+
+    @Override
     void printOptions(){
-        System.out.println("1. Add new game\n2. Edit price of game\n3. Exit");
+        System.out.println("1. Add new game\n2. Delete game\n3. Edit price of game\n4. Edit game\n5. Exit");
         try {
             executeInput(reader.readLine());
         } catch (IOException e) {
@@ -19,8 +25,10 @@ public class Developer extends AbstractUser {
     void executeInput(String input) {
         switch (input) {
             case "1" -> addGame();
-            case "2" -> editPrice();
-            case "3" -> System.exit(0);
+            case "2" -> deleteGame();
+            case "3" -> editPrice();
+            case "4" -> editGame();
+            case "5" -> System.exit(0);
             default -> {
                 System.out.println("No such command");
                 printOptions();
@@ -28,18 +36,122 @@ public class Developer extends AbstractUser {
         }
     }
 
+    private String checkIfOwnGame() {
+        int dev_id = getDevId();
+        String gameTitle = getGameTitle();
+        int id_from_query =-1;
+        try {
+            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Game WHERE title = ?");
+            stmt.setString(1, gameTitle);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                id_from_query = rs.getInt("id_developer");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if (dev_id == id_from_query) {
+            return gameTitle;
+        }
+        return null;
+    }
+
+    private String getDevName() {
+        String name ="";
+        try {
+            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM User WHERE id = ?");
+            stmt.setInt(1, user_id);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                name= rs.getString("login");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return name;
+    }
+
+    private int getDevId() {
+        String name = getDevName();
+        int id = -1;
+        try {
+            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Developer WHERE name = ?");
+            stmt.setString(1, name);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                id= rs.getInt("id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return id;
+    }
+
+    private void editGame() {
+        try {
+            String gameTitle = null;
+            while(gameTitle == null){
+                gameTitle = checkIfOwnGame();
+                if (gameTitle == null) {
+                    System.out.println("You are not developer of such game");
+                }
+            }
+
+            System.out.println("Give the new title: ");
+            String new_title = reader.readLine();
+            printTable("Publisher");
+            System.out.println("Give the new publisher id: ");
+            int pub_id = Integer.parseInt(reader.readLine());
+            System.out.println("Specify the new price: ");
+            int price = Integer.parseInt(reader.readLine());
+
+            PreparedStatement stmt = connection.prepareStatement("UPDATE Game SET title = ?, price = ?, id_publisher = ? WHERE title = ?");
+            stmt.setString(1, new_title);
+            stmt.setInt(3, pub_id);
+            stmt.setInt(2, price);
+            stmt.executeUpdate();
+
+            printOptions();
+
+            printOptions();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void deleteGame() {
+        try {
+            String gameTitle = null;
+            while(gameTitle == null){
+                gameTitle = checkIfOwnGame();
+                if (gameTitle == null) {
+                    System.out.println("You are not developer of such game");
+                }
+            }
+            PreparedStatement stmt = connection.prepareStatement("DELETE FROM Game where title = ?");
+            stmt.setString(1, gameTitle);
+            stmt.executeUpdate();
+
+            printOptions();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void editPrice() {
         try {
             String gameTitle = null;
             while(gameTitle == null){
-                gameTitle = getGameTitle();
+                gameTitle = checkIfOwnGame();
                 if (gameTitle == null) {
-                    System.out.println("There is no such game");
+                    System.out.println("You are not developer of such game");
                 }
             }
             System.out.println("Specify new price: ");
             String price = reader.readLine();
-            PreparedStatement stmt = connection.prepareStatement("UPDATE games SET price = ? WHERE title = ?");
+            PreparedStatement stmt = connection.prepareStatement("UPDATE Game SET price = ? WHERE title = ?");
             stmt.setString(1, price);
             stmt.setString(2, gameTitle);
             stmt.executeUpdate();
@@ -61,24 +173,33 @@ public class Developer extends AbstractUser {
                 }
             }
 
-            printTable("developers");
-            System.out.println("Give the developer id: ");
-            String dev_id = reader.readLine();
-            printTable("publishers");
+            printTable("Publisher");
             System.out.println("Give the publisher id: ");
             String pub_id = reader.readLine();
-            printTable("genres");
+            printTable("Genre");
             System.out.println("Give the genre id: ");
-            String gen_id = reader.readLine();
+            int gen_id = Integer.parseInt(reader.readLine());
             System.out.println("Specify the price: ");
-            String price = reader.readLine();
+            int price = Integer.parseInt(reader.readLine());
 
-            PreparedStatement stmt = connection.prepareStatement("INSERT INTO games VALUE (?,?,?,?,?)");
+            PreparedStatement stmt = connection.prepareStatement("INSERT INTO Game VALUE (DEFAULT,?,?,?,?)");
             stmt.setString(1, gameTitle);
-            stmt.setString(2, dev_id);
+            stmt.setInt(2, getDevId());
             stmt.setString(3, pub_id);
-            stmt.setString(4, gen_id);
-            stmt.setString(5, price);
+            stmt.setInt(4, price);
+            stmt.executeUpdate();
+
+            stmt = connection.prepareStatement("SELECT * FROM Game WHERE title = ?");
+            stmt.setString(1, gameTitle);
+            ResultSet rs = stmt.executeQuery();
+            int game_id = -1;
+            while (rs.next()) {
+                game_id = rs.getInt("id");
+            }
+
+            stmt = connection.prepareStatement("INSERT INTO Game_genre VALUE (?,?)");
+            stmt.setInt(1, game_id);
+            stmt.setInt(1, gen_id);
             stmt.executeUpdate();
 
             printOptions();

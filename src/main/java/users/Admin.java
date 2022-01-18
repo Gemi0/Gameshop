@@ -5,6 +5,11 @@ import java.sql.PreparedStatement;
 
 public class Admin extends AbstractUser{
     @Override
+    void setUser_id() {
+
+    }
+
+    @Override
     void printOptions() {
         System.out.println("1. View table\n2. Delete game\n3. Figure inflation in prices \n4. Exit");
         try {
@@ -41,7 +46,7 @@ public class Admin extends AbstractUser{
                     System.out.println("There is no such game");
                 }
             }
-            PreparedStatement stmt = connection.prepareStatement("DELETE FROM games where title = ?");
+            PreparedStatement stmt = connection.prepareStatement("DELETE FROM Game where title = ?");
             stmt.setString(1, gameTitle);
             stmt.execute();
 
