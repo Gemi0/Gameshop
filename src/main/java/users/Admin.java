@@ -1,11 +1,22 @@
 package users;
 
+import database.DBConnector;
+
 import java.io.IOException;
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class Admin extends AbstractUser{
+
+    @Override
+    void getConnection() {
+        try {
+            connection = DBConnector.getAdminConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void printOptions() {

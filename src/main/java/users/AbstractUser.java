@@ -15,14 +15,9 @@ public abstract class AbstractUser {
 
     Connection connection;
 
-    {
-        try {
-            connection = DBConnector.getCustomerConnection();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
     int user_id;
+
+    abstract void getConnection();
 
     public void setUser_id(int id) {
         user_id = id;

@@ -1,10 +1,21 @@
 package users;
 
+import database.DBConnector;
+
 import java.io.IOException;
 import java.sql.*;
 import java.util.*;
 
 public class Customer extends AbstractUser {
+
+    @Override
+    void getConnection() {
+        try {
+            connection = DBConnector.getCustomerConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void printOptions() {
