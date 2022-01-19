@@ -7,10 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class Developer extends AbstractUser {
-    @Override
-    void setUser_id() {
-        //TODO set this while creating user
-    }
 
     @Override
     public void printOptions(){

@@ -6,10 +6,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class Admin extends AbstractUser{
-    @Override
-    void setUser_id() {
-
-    }
 
     @Override
     public void printOptions() {

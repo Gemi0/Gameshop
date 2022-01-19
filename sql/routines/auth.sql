@@ -63,6 +63,14 @@ select u.login from User u where u.id = id;
 end $$
 delimiter ;
 
+delimiter $$
+drop procedure if exists getUserByName;
+create procedure getUserByName(in login varchar(30))
+begin
+    select u.id from User u where u.login = login;
+end $$
+delimiter ;
+
 -- Changes user password
 drop procedure if exists changeUserPassword;
 delimiter $$

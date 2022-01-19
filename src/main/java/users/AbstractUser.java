@@ -17,14 +17,16 @@ public abstract class AbstractUser {
 
     {
         try {
-            connection = DBConnector.getConnection();
+            connection = DBConnector.getCustomerConnection();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
     int user_id;
 
-    abstract void setUser_id();
+    public void setUser_id(int id) {
+        user_id = id;
+    }
     abstract void printOptions();
 
     abstract void executeInput(String input);

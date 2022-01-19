@@ -19,6 +19,7 @@ grant execute on procedure getUserType to 'auth'@'%';
 grant execute on procedure getUserBalance to 'auth'@'%';
 grant execute on procedure increaseUserBalance to 'auth'@'%';
 grant execute on procedure decreaseUserBalance to 'auth'@'%';
+grant execute on procedure getUserByName to 'auth'@'%';
 
 drop user if exists 'client'@'%';
 create user 'client'@'%' identified by 'verysecretclient';

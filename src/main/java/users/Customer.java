@@ -7,11 +7,6 @@ import java.util.*;
 public class Customer extends AbstractUser {
 
     @Override
-    void setUser_id() {
-        //TODO set this while creating user
-    }
-
-    @Override
     public void printOptions() {
         System.out.println("""
                 1. Browse games
