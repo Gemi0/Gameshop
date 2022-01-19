@@ -22,6 +22,7 @@ public abstract class AbstractUser {
     public void setUser_id(int id) {
         user_id = id;
     }
+
     abstract void printOptions();
 
     abstract void executeInput(String input);

@@ -9,7 +9,7 @@ import java.util.*;
 public class Customer extends AbstractUser {
 
     @Override
-    void getConnection() {
+    public void getConnection() {
         try {
             connection = DBConnector.getCustomerConnection();
         } catch (SQLException e) {

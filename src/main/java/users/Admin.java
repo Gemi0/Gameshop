@@ -10,7 +10,7 @@ import java.sql.SQLException;
 public class Admin extends AbstractUser{
 
     @Override
-    void getConnection() {
+    public void getConnection() {
         try {
             connection = DBConnector.getAdminConnection();
         } catch (SQLException e) {

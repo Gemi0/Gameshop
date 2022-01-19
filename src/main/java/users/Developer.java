@@ -11,7 +11,7 @@ import java.sql.SQLException;
 public class Developer extends AbstractUser {
 
     @Override
-    void getConnection() {
+    public void getConnection() {
         try {
             connection = DBConnector.getDevConnection();
         } catch (SQLException e) {

@@ -114,12 +114,15 @@ public class Main {
             switch (type) {
                 case "admin":
                     Admin admin = new Admin();
+                    admin.getConnection();
                     admin.setUser_id(id);
                 case "dev":
                     Developer developer = new Developer();
+                    developer.getConnection();
                     developer.setUser_id(id);
                 case "client":
                     Customer customer = new Customer();
+                    customer.getConnection();
                     customer.setUser_id(id);
                 default:
                     System.out.println("Error");
