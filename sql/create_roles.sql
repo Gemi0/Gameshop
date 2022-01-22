@@ -58,7 +58,7 @@ grant execute on procedure editPrice to 'developer'@'%';
 grant execute on procedure addGame to 'developer'@'%';
 grant execute on procedure insertGameGenre to 'developer'@'%';
 grant execute on procedure getDevByName to 'developer'@'%';
-
+grant execute on procedure insertGenre to 'developer'@'%';
 
 drop user if exists 'admin'@'%';
 create user 'admin'@'%' identified by 'verysecretadmin';

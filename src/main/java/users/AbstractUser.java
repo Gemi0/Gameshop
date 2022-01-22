@@ -26,6 +26,9 @@ public abstract class AbstractUser {
         user_id = id;
     }
     abstract void printOptions();
+    protected String getDevName() {
+        return username;
+    }
 
     protected void exit() {
         System.out.println("Goodbye!");

@@ -1,6 +1,7 @@
 package users;
 
 import database.DBConnector;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import java.io.IOException;
 import java.sql.CallableStatement;
@@ -65,7 +66,7 @@ public class Admin extends Developer {
                 case "8" -> exit();
                 default -> {
                     System.out.println("No such command");
-                    developerOptions();
+                    adminOptions();
                 }
             }
         } catch (IOException e) {
@@ -73,23 +74,107 @@ public class Admin extends Developer {
         }
     }
 
-    //TODO: Change user's type
     private void changeUserType() {
+        System.out.println("""
+                
+                1. Change to customer
+                2. Change to developer
+                3. Return
+                """);
+        try {
+            System.out.print("Command: ");
+            switch (reader.readLine()) {
+                case "1" -> changeToCustomer();
+                case "2" -> changeToDev();
+                case "3" -> printOptions();
+                default -> {
+                    System.out.println("No such command");
+                    adminOptions();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void changeToDev() {
+        try {
+            System.out.println("User ID: ");
+            int id  = Integer.parseInt(reader.readLine());
+            CallableStatement stmt = this.connection.prepareCall("{call changeUserType(?,?)}");
+            stmt.setFloat(1,id);
+            stmt.setString(2,"dev");
+            stmt.executeQuery();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         adminOptions();
     }
 
-    //TODO: Decrease user's balance
+    private void changeToCustomer() {
+        try {
+            System.out.println("User ID: ");
+            int id  = Integer.parseInt(reader.readLine());
+            CallableStatement stmt = this.connection.prepareCall("{call changeUserType(?,?)}");
+            stmt.setFloat(1,id);
+            stmt.setString(2,"client");
+            stmt.executeQuery();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        adminOptions();
+    }
+
     private void decreaseUserBalance() {
+        try {
+            System.out.println("User ID: ");
+            int id  = Integer.parseInt(reader.readLine());
+            System.out.println("Amount to decrease: ");
+            int amount = Integer.parseInt(reader.readLine());
+            CallableStatement stmt = this.connection.prepareCall("{call decreaseUserBalance(?,?)}");
+            stmt.setFloat(1,id);
+            stmt.setInt(2,amount);
+            stmt.executeQuery();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         adminOptions();
     }
 
-    //TODO: Increase user's balance
     private void increaseUserBalance() {
+        try {
+            System.out.println("User ID: ");
+            int id  = Integer.parseInt(reader.readLine());
+            System.out.println("Amount to increase: ");
+            int amount = Integer.parseInt(reader.readLine());
+            CallableStatement stmt = this.connection.prepareCall("{call increaseUserBalance(?,?)}");
+            stmt.setFloat(1,id);
+            stmt.setInt(2,amount);
+            stmt.executeQuery();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         adminOptions();
     }
 
-    //TODO: Change user's password
     private void changeUserPassword() {
+        try {
+            System.out.println("User ID: ");
+            int id  = Integer.parseInt(reader.readLine());
+            System.out.println("New password: ");
+            String pass = reader.readLine();
+            CallableStatement stmt = this.connection.prepareCall("{call changeUserPassword(?,?)}");
+            stmt.setFloat(1,id);
+            stmt.setString(2, BCrypt.hashpw(pass, BCrypt.gensalt(10)));
+            stmt.executeQuery();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         adminOptions();
     }
 
@@ -97,7 +182,7 @@ public class Admin extends Developer {
         try {
             System.out.println("How big is the inflation (give input in format: 1.05): ");
             float inf = Float.parseFloat(reader.readLine());
-            stmt = this.connection.prepareCall("{call figureInflation(?)}");
+            CallableStatement stmt = this.connection.prepareCall("{call figureInflation(?)}");
             stmt.setFloat(1,inf);
             stmt.executeQuery();
 
@@ -116,7 +201,7 @@ public class Admin extends Developer {
                     System.out.println("There is no such game");
                 }
             }
-            stmt = this.connection.prepareCall("{call deleteGame(?)}");
+            CallableStatement stmt = this.connection.prepareCall("{call deleteGame(?)}");
             stmt.setString(1, gameTitle);
             stmt.executeQuery();
 

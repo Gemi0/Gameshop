@@ -11,15 +11,12 @@
 -- If user_id doesn't match game developer_id, rollback;
 -- Returns deleted game's id
 drop procedure if exists deleteGame;
-create procedure deleteGame(in user_id int, in gameTitle varchar(100))
+create procedure deleteGame(in gameTitle varchar(100))
 begin
     declare game_id int;
     start transaction;
     set game_id = (select g.id from Game g where g.title = gameTitle);
     if game_id is null then
-        rollback;
-    end if;
-    if user_id != (select g.id_developer from Game g where g.title = gameTitle) then
         rollback;
     end if;
     delete from Game where title = gameTitle;
@@ -82,19 +79,19 @@ CREATE PROCEDURE addGame(in gameTitle varchar(100), in dev_id int, in pub_id int
 begin
     declare id_game int;
     start transaction;
-    if (select * from Developer where id = dev_id) is null then
+    if (select id from Developer where id = dev_id) is null then
         rollback;
     end if;
-    if (select * from Publisher where id = pub_id) is null then
+    if (select id from Publisher where id = pub_id) is null then
         rollback;
     end if;
     if new_price is null or new_price < 0 then
         rollback;
     end if;
-    insert into Game(title, id_developer, id_publisher, price) VALUE (gameTitle, dev_id, pub_id, new_price);
-    set id_game = (select g.id from Game g where g.title = gameTitle);
+    insert into Game (title, id_developer, id_publisher, price) VALUE (gameTitle, dev_id, pub_id, new_price);
+     set id_game = (select g.id from Game g where g.title = gameTitle);
     commit;
-    select id_game;
+     select id_game;
 end;
 
 -- Inserts new game genre to given game

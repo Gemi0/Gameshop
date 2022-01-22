@@ -3,6 +3,7 @@ package users;
 import database.DBConnector;
 
 import java.io.IOException;
+import java.sql.CallableStatement;
 import java.sql.SQLException;
 
 public class Developer extends Customer {
@@ -69,7 +70,7 @@ public class Developer extends Customer {
     protected String getGameTitle() {
         try {
             String title = reader.readLine();
-            stmt = this.connection.prepareCall("{call getGameByTitle(?)}");
+            CallableStatement stmt = this.connection.prepareCall("{call getGameByTitle(?)}");
             stmt.setString(1, title);
             rs = stmt.executeQuery();
             String dummy = "";
@@ -90,7 +91,7 @@ public class Developer extends Customer {
         String gameTitle = getGameTitle();
         int id_from_query =-1;
         try {
-            stmt = connection.prepareCall("{call getGameByTitle(?)}");
+            CallableStatement stmt = connection.prepareCall("{call getGameByTitle(?)}");
             stmt.setString(1, gameTitle);
             rs = stmt.executeQuery();
             while (rs.next()) {
@@ -105,15 +106,11 @@ public class Developer extends Customer {
         return null;
     }
 
-    private String getDevName() {
-        return username;
-    }
-
     private int getDevId() {
         String name = getDevName();
         int id = -1;
         try {
-            stmt = connection.prepareCall("{call getDevByName(?)}");
+            CallableStatement stmt = connection.prepareCall("{call getDevByName(?)}");
             stmt.setString(1, name);
             rs = stmt.executeQuery();
             while (rs.next()) {
@@ -125,7 +122,6 @@ public class Developer extends Customer {
         return id;
     }
 
-    // TODO: TEST IT
     private void editGame() {
         try {
             System.out.println("Edit game");
@@ -143,7 +139,7 @@ public class Developer extends Customer {
             System.out.print("New price: ");
             int price = Integer.parseInt(reader.readLine());
 
-            stmt = connection.prepareCall("{call editGame(?,?,?,?)}");
+            CallableStatement stmt = connection.prepareCall("{call editGame(?,?,?,?)}");
             stmt.setString(1, gameTitle);
             stmt.setString(2, new_title);
             stmt.setInt(3, pub_id);
@@ -157,7 +153,6 @@ public class Developer extends Customer {
         }
     }
 
-    // TODO: TEST IT
     private void deleteGame() {
         try {
             System.out.println("Delete game");
@@ -168,7 +163,7 @@ public class Developer extends Customer {
                 developerOptions();
             }
 
-            stmt = connection.prepareCall("{call deleteGame(?)}");
+            CallableStatement stmt = connection.prepareCall("{call deleteGame(?)}");
             stmt.setString(1, gameTitle);
             stmt.executeQuery();
 
@@ -179,7 +174,6 @@ public class Developer extends Customer {
         }
     }
 
-    // TODO: TEST IT
     private void editPrice() {
         try {
             System.out.println("Edit price");
@@ -191,7 +185,7 @@ public class Developer extends Customer {
             }
             System.out.print("Price: ");
             String price = reader.readLine();
-            stmt = connection.prepareCall("{call editPrice(?)}");
+            CallableStatement stmt = connection.prepareCall("{call editPrice(?, ?)}");
             stmt.setString(1, price);
             stmt.setString(2, gameTitle);
             stmt.executeQuery();
@@ -203,7 +197,6 @@ public class Developer extends Customer {
         }
     }
 
-    // TODO: FIX BUG? Java.sql.SQLException: Parameter index out of range (3 > number of parameters, which is 1).
     private void addGame() {
         stmt = null;
         try {
@@ -230,7 +223,7 @@ public class Developer extends Customer {
             }
             if(temp == -1 || price == -1) developerOptions();
 
-            stmt = connection.prepareCall("{call addGame(?,?,?,?)}");
+            CallableStatement stmt = connection.prepareCall("call addGame(?, ?, ?, ?)");
             stmt.setString(1, gameTitle);
             stmt.setInt(2, getDevId());
             stmt.setInt(3, temp);
@@ -275,7 +268,7 @@ public class Developer extends Customer {
         String title;
         try {
             title = reader.readLine();
-            stmt = connection.prepareCall("{call getGameByTitle(?)}");
+            CallableStatement stmt = connection.prepareCall("{call getGameByTitle(?)}");
             stmt.setString(1, title);
             rs = stmt.executeQuery();
             String dummy = "";

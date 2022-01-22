@@ -36,29 +36,29 @@ end;
 
 -- Changes specified user's type ('user' or 'dev')
 drop procedure if exists changeUserType;
-create procedure changeUserType(in id int, in newtype enum ('user', 'dev'))
+create procedure changeUserType(in id_new int, in newtype enum ('dev', 'client'))
 begin
     start transaction;
-    if (select u.id from User u where u.id = id) is null or newtype is null then
+    if (select u.id from User u where u.id = id_new) is null or newtype is null then
         rollback;
     end if;
-    update User_info ui set ui.type = newtype where ui.id_user = id;
+    update User_info ui set ui.type = newtype where ui.id_user = id_new;
     commit;
-    select id;
+    select id_new;
 end;
 
 -- Changes user password
 drop procedure if exists changeUserPassword;
 delimiter $$
-create procedure changeUserPassword(in log varchar(60), in newpwd varchar(100))
+create procedure changeUserPassword(in uid int, in newpwd varchar(100))
 begin
     declare userLogin varchar(60);
     start transaction;
-    set userLogin = (select u.login from User u where u.login = log);
+    set userLogin = (select u.login from User u where u.id = uid);
     if userLogin is null then -- no such user found
         rollback;
     else
-        update User u set u.password = newpwd where u.login = log;
+        update User u set u.password = newpwd where u.id = uid;
         commit;
     end if;
 end $$

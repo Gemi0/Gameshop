@@ -24,10 +24,6 @@ public class Main {
         printOptions();
     }
 
-    public static void clearConsole() {
-        System.out.println(System.lineSeparator().repeat(50));
-    }
-
     private static void connect() {
         try {
             connection = DBConnector.getAuthConnection();
