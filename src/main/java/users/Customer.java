@@ -258,6 +258,7 @@ public class Customer extends AbstractUser {
         }
     }
 
+    //TODO: TEST IT
     private void getUserGames() {
         try {
             stmt = this.connection.prepareCall("{call getUserGames(?)}");
