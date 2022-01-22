@@ -16,6 +16,15 @@ public class Developer extends Customer {
     }
 
     @Override
+    public void getConnection() {
+        try {
+            connection = DBConnector.getDevConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public void printOptions(){
         System.out.println("""
                 

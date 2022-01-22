@@ -140,18 +140,21 @@ public class Main {
             switch (type) {
                 case "admin" -> {
                     Admin admin = new Admin();
+                    admin.getConnection();
                     admin.setUser_id(id);
                     admin.setUsername(login);
                     admin.printOptions();
                 }
                 case "dev" -> {
                     Developer developer = new Developer();
+                    developer.getConnection();
                     developer.setUser_id(id);
                     developer.setUsername(login);
                     developer.printOptions();
                 }
                 case "client" -> {
                     Customer customer = new Customer();
+                    customer.getConnection();
                     customer.setUser_id(id);
                     customer.setUsername(login);
                     customer.printOptions();
