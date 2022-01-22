@@ -46,3 +46,48 @@ begin
     commit;
     select id;
 end;
+
+-- Changes user password
+drop procedure if exists changeUserPassword;
+delimiter $$
+create procedure changeUserPassword(in log varchar(60), in newpwd varchar(100))
+begin
+    declare userLogin varchar(60);
+    start transaction;
+    set userLogin = (select u.login from User u where u.login = log);
+    if userLogin is null then -- no such user found
+        rollback;
+    else
+        update User u set u.password = newpwd where u.login = log;
+        commit;
+    end if;
+end $$
+delimiter ;
+
+-- Gets user's balance
+-- Returns: user's balance from User_info table
+drop procedure if exists getUserBalance;
+delimiter $$
+create procedure getUserBalance(in id int)
+begin
+    select u.balance from User_info u where id_user = id;
+end $$
+delimiter ;
+
+-- Adds credits to user's balance
+drop procedure if exists increaseUserBalance;
+delimiter $$
+create procedure increaseUserBalance(in id int, in increase int)
+begin
+    update User_info u set u.balance = u.balance + increase where u.id_user = id;
+end $$
+delimiter ;
+
+-- Decreases user's balance
+drop procedure if exists decreaseUserBalance;
+delimiter $$
+create procedure decreaseUserBalance(in id int, in decrease int)
+begin
+    update User_info u set u.balance = u.balance - decrease where u.id_user = id;
+end $$
+delimiter ;

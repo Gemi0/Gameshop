@@ -8,8 +8,8 @@
 #####################################################################
 
 -- Create database
-create database db_gameshop;
-use db_gameshop;
+# create database db_gameshop;
+# use db_gameshop;
 
 -- Drop in case tables already exist
 drop table if exists Orders_game;
