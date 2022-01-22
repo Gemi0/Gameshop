@@ -252,7 +252,7 @@ public class Developer extends Customer {
                     System.out.print("Genre id: ");
                     continue;
                 }
-                stmt = connection.prepareCall("{call insertGenre(?, ?)}");
+                stmt = connection.prepareCall("{call insertGameGenre(?, ?)}");
                 stmt.setInt(1, game_id);
                 stmt.setInt(2, temp);
                 stmt.executeQuery();
