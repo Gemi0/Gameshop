@@ -853,10 +853,6 @@ grant execute on procedure addGameToOrder to 'admin'@'%';
 grant execute on procedure finalizeOrder to 'admin'@'%';
 -- INHERITED FROM DEVELOPER
 grant execute on procedure deleteGame to 'admin'@'%';
-grant execute on procedure editGame to 'admin'@'%';
-grant execute on procedure editPrice to 'admin'@'%';
-grant execute on procedure addGame to 'admin'@'%';
-grant execute on procedure insertGameGenre to 'admin'@'%';
 grant execute on procedure getDevByName to 'admin'@'%';
 -- INHERITED FROM AUTH
 grant execute on procedure getUsername to 'admin'@'%';
