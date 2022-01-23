@@ -89,9 +89,9 @@ begin
         rollback;
     end if;
     insert into Game (title, id_developer, id_publisher, price) VALUE (gameTitle, dev_id, pub_id, new_price);
-     set id_game = (select g.id from Game g where g.title = gameTitle);
+    set id_game = (select g.id from Game g where g.title = gameTitle);
     commit;
-     select id_game;
+    select id_game;
 end;
 
 -- Inserts new game genre to given game

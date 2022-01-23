@@ -90,5 +90,7 @@ grant execute on procedure getUserBalance to 'admin'@'%';
 grant execute on procedure increaseUserBalance to 'admin'@'%';
 grant execute on procedure decreaseUserBalance to 'admin'@'%';
 grant execute on procedure changeUserType to 'admin'@'%';
+grant execute on procedure addDeveloper to 'admin'@'%';
+grant execute on procedure removeDeveloper to 'admin'@'%';
 
 flush privileges;

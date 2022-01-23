@@ -60,6 +60,7 @@ begin
     else
         update User u set u.password = newpwd where u.id = uid;
         commit;
+        select uid;
     end if;
 end $$
 delimiter ;
@@ -89,5 +90,32 @@ delimiter $$
 create procedure decreaseUserBalance(in id int, in decrease int)
 begin
     update User_info u set u.balance = u.balance - decrease where u.id_user = id;
+end $$
+delimiter ;
+
+-- Add user to developer table
+drop procedure if exists addDeveloper;
+delimiter $$
+create procedure addDeveloper(in id_user int, in hq varchar(80))
+begin
+    declare dev_name varchar(50) default (select u.login from User u where u.id = id_user);
+    declare dev_id int default (select id from Developer where name = dev_name);
+    start transaction;
+    if dev_name is null or dev_id is not null then
+        rollback;
+    else
+        insert ignore into Developer(name, headquarters) value(dev_name, hq);
+        commit;
+        select dev_name;
+    end if;
+end $$
+delimiter ;
+
+-- Add user to developer table
+drop procedure if exists removeDeveloper;
+delimiter $$
+create procedure removeDeveloper(in dev_name varchar(50))
+begin
+    delete from Developer where name = dev_name;
 end $$
 delimiter ;

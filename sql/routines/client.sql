@@ -76,7 +76,7 @@ end;
 drop procedure if exists getUserGames;
 CREATE PROCEDURE getUserGames(in user_id int)
 begin
-    SELECT ug.id_game, g.title
+    SELECT ug.id_game as id, g.title as title
     FROM User_game ug
              JOIN Game g ON g.id = ug.id_game
     WHERE ug.id_user = user_id;
