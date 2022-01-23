@@ -28,7 +28,6 @@ public class Customer extends AbstractUser {
                 6. Return
                 7. Exit""");
         try {
-            System.out.println();
             System.out.print("Command: ");
             switch (reader.readLine()) {
                 case "1" -> browseGames();
@@ -70,7 +69,7 @@ public class Customer extends AbstractUser {
                     stmt = connection.prepareCall("{call browsePublishers()}");
                     rs = stmt.executeQuery();
                     System.out.println();
-                    System.out.println("PUBLISHERS");
+                    System.out.println("Publishers");
                     while(rs.next()) {
                         System.out.println("ID: " + rs.getString("id") + " NAME: " + rs.getString("name") + " HEADQUARTERS: " + rs.getString("headquarters"));
                     }
@@ -261,19 +260,41 @@ public class Customer extends AbstractUser {
     //TODO: TEST IT
     private void getUserGames() {
         try {
+            System.out.println();
+            System.out.println("Your games: ");
             stmt = this.connection.prepareCall("{call getUserGames(?)}");
             stmt.setInt(1, user_id);
             rs = stmt.executeQuery();
-            if(!rs.next()) {
-                System.out.println("No games found on your account");
-            }
+            int i = 0;
             while (rs.next()) {
-                System.out.println("TEST");
                 System.out.println("ID: " + rs.getString("id") + " TITLE: " + rs.getString("title"));
+                i++;
+            }
+            if(i == 0) {
+                System.out.println("No games found on your account");
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         clientOptions();
+    }
+
+    protected String getGameTitle() {
+        try {
+            String title = reader.readLine();
+            CallableStatement stmt = this.connection.prepareCall("{call getGameByTitle(?)}");
+            stmt.setString(1, title);
+            rs = stmt.executeQuery();
+            String dummy = "";
+            while(rs.next()) {
+                dummy = rs.getString("title");
+            }
+            if (dummy.equals(title)) {
+                return title;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

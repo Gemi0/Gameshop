@@ -8,7 +8,7 @@ import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class Admin extends Developer {
+public class Admin extends Customer {
     {
         try {
             connection = DBConnector.getAdminConnection();
@@ -22,16 +22,14 @@ public class Admin extends Developer {
         System.out.println("""
                 
                 1. Customer options
-                2. Developer options
-                3. Admin options
-                4. Exit""");
+                2. Admin options
+                3. Exit""");
         try {
             System.out.print("Command: ");
             switch(reader.readLine()) {
                 case "1" -> clientOptions();
-                case "2" -> developerOptions();
-                case "3" -> adminOptions();
-                case "4" -> exit();
+                case "2" -> adminOptions();
+                case "3" -> exit();
                 default -> {
                     System.out.println("No such command");
                     printOptions();
@@ -86,10 +84,10 @@ public class Admin extends Developer {
             switch (reader.readLine()) {
                 case "1" -> changeToCustomer();
                 case "2" -> changeToDev();
-                case "3" -> printOptions();
+                case "3" -> adminOptions();
                 default -> {
                     System.out.println("No such command");
-                    adminOptions();
+                    changeUserType();
                 }
             }
         } catch (IOException e) {
@@ -99,13 +97,34 @@ public class Admin extends Developer {
 
     private void changeToDev() {
         try {
-            System.out.println("User ID: ");
+            System.out.print("User ID: ");
             int id  = Integer.parseInt(reader.readLine());
             CallableStatement stmt = this.connection.prepareCall("{call changeUserType(?,?)}");
-            stmt.setFloat(1,id);
+            stmt.setInt(1,id);
             stmt.setString(2,"dev");
-            stmt.executeQuery();
-
+            rs = stmt.executeQuery();
+            int user = -1;
+            while (rs.next()) {
+                user = rs.getInt(1);
+                System.out.println("User type changed to dev!");
+            }
+            if(user == -1) {
+                System.out.println("Error while changing the user's type");
+                adminOptions();
+            }
+            System.out.print("Dev headquarters: ");
+            String headquarters = reader.readLine();
+            stmt = this.connection.prepareCall("{call addDeveloper(?,?)}");
+            stmt.setInt(1, id);
+            stmt.setString(2, headquarters);
+            stmt.execute();
+            rs = stmt.getResultSet();
+            if(rs == null) {
+                System.out.println("Omitting insert, dev already exists");
+                adminOptions();
+            }
+            System.out.println("Developer successfully added!");
+            adminOptions();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -114,12 +133,21 @@ public class Admin extends Developer {
 
     private void changeToCustomer() {
         try {
-            System.out.println("User ID: ");
+            System.out.print("User ID: ");
             int id  = Integer.parseInt(reader.readLine());
             CallableStatement stmt = this.connection.prepareCall("{call changeUserType(?,?)}");
             stmt.setFloat(1,id);
             stmt.setString(2,"client");
-            stmt.executeQuery();
+            rs = stmt.executeQuery();
+            int user = -1;
+            while (rs.next()) {
+                user = rs.getInt(1);
+                System.out.println("User type changed to client!");
+            }
+            if(user == -1) {
+                System.out.println("Error while changing the user's type");
+                adminOptions();
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -129,15 +157,27 @@ public class Admin extends Developer {
 
     private void decreaseUserBalance() {
         try {
-            System.out.println("User ID: ");
-            int id  = Integer.parseInt(reader.readLine());
-            System.out.println("Amount to decrease: ");
-            int amount = Integer.parseInt(reader.readLine());
+            System.out.print("User ID: ");
+            int id  = -1;
+            try {
+                id = Integer.parseInt(reader.readLine());
+            } catch(Exception e) {
+                System.out.println("Invalid id");
+                adminOptions();
+            }
+            System.out.print("Amount to decrease: ");
+            int amount = -1;
+            try {
+                amount = Integer.parseInt(reader.readLine());
+            } catch(Exception e) {
+                System.out.println("Invalid amount");
+                adminOptions();
+            }
             CallableStatement stmt = this.connection.prepareCall("{call decreaseUserBalance(?,?)}");
             stmt.setFloat(1,id);
             stmt.setInt(2,amount);
             stmt.executeQuery();
-
+            System.out.println("User id=" + id + " balance decreased (-" + amount + ")!");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -146,15 +186,27 @@ public class Admin extends Developer {
 
     private void increaseUserBalance() {
         try {
-            System.out.println("User ID: ");
-            int id  = Integer.parseInt(reader.readLine());
-            System.out.println("Amount to increase: ");
-            int amount = Integer.parseInt(reader.readLine());
+            System.out.print("User ID: ");
+            int id  = -1;
+            try {
+                id = Integer.parseInt(reader.readLine());
+            } catch(Exception e) {
+                System.out.println("Invalid id");
+                adminOptions();
+            }
+            System.out.print("Amount to increase: ");
+            int amount = -1;
+            try {
+                amount = Integer.parseInt(reader.readLine());
+            } catch(Exception e) {
+                System.out.println("Invalid amount");
+                adminOptions();
+            }
             CallableStatement stmt = this.connection.prepareCall("{call increaseUserBalance(?,?)}");
-            stmt.setFloat(1,id);
+            stmt.setInt(1,id);
             stmt.setInt(2,amount);
             stmt.executeQuery();
-
+            System.out.println("User id=" + id + " balance increased (+" + amount + ")!");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -163,15 +215,30 @@ public class Admin extends Developer {
 
     private void changeUserPassword() {
         try {
-            System.out.println("User ID: ");
-            int id  = Integer.parseInt(reader.readLine());
-            System.out.println("New password: ");
+            System.out.print("User ID: ");
+            int id  = -1;
+            try {
+                id = Integer.parseInt(reader.readLine());
+            } catch(Exception e) {
+                System.out.println("Invalid id");
+                adminOptions();
+            }
+            CallableStatement stmt = this.connection.prepareCall("{call getUsername(?)}");
+            stmt.setInt(1, id);
+            rs = stmt.executeQuery();
+            if(!rs.next()) {
+                System.out.println("Invalid user id provided");
+                adminOptions();
+            }
+
+            System.out.print("New password: ");
             String pass = reader.readLine();
-            CallableStatement stmt = this.connection.prepareCall("{call changeUserPassword(?,?)}");
-            stmt.setFloat(1,id);
+            stmt = this.connection.prepareCall("{call changeUserPassword(?,?)}");
+            stmt.setInt(1,id);
             stmt.setString(2, BCrypt.hashpw(pass, BCrypt.gensalt(10)));
             stmt.executeQuery();
-
+            System.out.println("User id=" + id + " password changed!");
+            adminOptions();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -180,12 +247,12 @@ public class Admin extends Developer {
 
     private void figureInflation() {
         try {
-            System.out.println("How big is the inflation (give input in format: 1.05): ");
+            System.out.print("How big is the inflation (give input in format: 1.05): ");
             float inf = Float.parseFloat(reader.readLine());
             CallableStatement stmt = this.connection.prepareCall("{call figureInflation(?)}");
             stmt.setFloat(1,inf);
             stmt.executeQuery();
-
+            System.out.println("Prices changed!");
             adminOptions();
         } catch (Exception e) {
             e.printStackTrace();
@@ -194,17 +261,26 @@ public class Admin extends Developer {
 
     private void deleteGame() {
         try {
-            String gameTitle = null;
-            while (gameTitle == null) {
-                gameTitle = getGameTitle();
-                if (gameTitle == null) {
-                    System.out.println("There is no such game");
-                }
+            System.out.println();
+            System.out.println("Delete game");
+            System.out.print("Game title: ");
+            String gameTitle = getGameTitle();
+            if (gameTitle == null) {
+                System.out.println("There is no such game");
+                adminOptions();
             }
             CallableStatement stmt = this.connection.prepareCall("{call deleteGame(?)}");
             stmt.setString(1, gameTitle);
-            stmt.executeQuery();
-
+            rs = stmt.executeQuery();
+            int game_id = -1;
+            while (rs.next()) {
+                game_id = rs.getInt(1);
+                System.out.println("Game deleted!");
+            }
+            if(game_id == -1) {
+                System.out.println("Error while deleting the game");
+                adminOptions();
+            }
             adminOptions();
         }
         catch (Exception e) {

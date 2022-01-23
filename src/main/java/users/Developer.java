@@ -67,25 +67,6 @@ public class Developer extends Customer {
         }
     }
 
-    protected String getGameTitle() {
-        try {
-            String title = reader.readLine();
-            CallableStatement stmt = this.connection.prepareCall("{call getGameByTitle(?)}");
-            stmt.setString(1, title);
-            rs = stmt.executeQuery();
-            String dummy = "";
-            while(rs.next()) {
-                dummy = rs.getString("title");
-            }
-            if (dummy.equals(title)) {
-                return title;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     private String checkIfOwnGame() {
         int dev_id = getDevId();
         String gameTitle = getGameTitle();
@@ -124,6 +105,7 @@ public class Developer extends Customer {
 
     private void editGame() {
         try {
+            System.out.println();
             System.out.println("Edit game");
             System.out.print("Game title: ");
             String gameTitle = checkIfOwnGame();
@@ -135,17 +117,37 @@ public class Developer extends Customer {
             System.out.print("New title: ");
             String new_title = reader.readLine();
             System.out.print("New publisher id: ");
-            int pub_id = Integer.parseInt(reader.readLine());
+            int pub_id = -1;
+            try {
+               pub_id = Integer.parseInt(reader.readLine());
+            } catch(Exception e) {
+                System.out.println("Invalid publisher id");
+                developerOptions();
+            }
             System.out.print("New price: ");
-            int price = Integer.parseInt(reader.readLine());
+            int price = -1;
+            try {
+                price = Integer.parseInt(reader.readLine());
+            } catch(Exception e) {
+                System.out.println("Invalid price");
+                developerOptions();
+            }
 
             CallableStatement stmt = connection.prepareCall("{call editGame(?,?,?,?)}");
             stmt.setString(1, gameTitle);
             stmt.setString(2, new_title);
             stmt.setInt(3, pub_id);
             stmt.setInt(4, price);
-            stmt.executeQuery();
-
+            rs = stmt.executeQuery();
+            int game_id = -1;
+            while (rs.next()) {
+                System.out.println("Game edited!");
+                game_id = rs.getInt(1);
+            }
+            if(game_id == -1) {
+                System.out.println("Error while editing the game");
+                developerOptions();
+            }
             developerOptions();
         }
         catch (Exception e) {
@@ -155,6 +157,7 @@ public class Developer extends Customer {
 
     private void deleteGame() {
         try {
+            System.out.println();
             System.out.println("Delete game");
             System.out.print("Game title: ");
             String gameTitle = checkIfOwnGame();
@@ -165,8 +168,16 @@ public class Developer extends Customer {
 
             CallableStatement stmt = connection.prepareCall("{call deleteGame(?)}");
             stmt.setString(1, gameTitle);
-            stmt.executeQuery();
-
+            rs = stmt.executeQuery();
+            int game_id = -1;
+            while (rs.next()) {
+                System.out.println("Game deleted!");
+                game_id = rs.getInt(1);
+            }
+            if(game_id == -1) {
+                System.out.println("Error while deleting the game");
+                developerOptions();
+            }
             developerOptions();
         }
         catch (Exception e) {
@@ -176,6 +187,7 @@ public class Developer extends Customer {
 
     private void editPrice() {
         try {
+            System.out.println();
             System.out.println("Edit price");
             System.out.print("Game title: ");
             String gameTitle = checkIfOwnGame();
@@ -184,12 +196,26 @@ public class Developer extends Customer {
                 developerOptions();
             }
             System.out.print("Price: ");
-            String price = reader.readLine();
+            int price = -1;
+            try {
+                price = Integer.parseInt(reader.readLine());
+            } catch(Exception e) {
+                System.out.println("Invalid price");
+                developerOptions();
+            }
             CallableStatement stmt = connection.prepareCall("{call editPrice(?, ?)}");
-            stmt.setString(1, price);
+            stmt.setInt(1, price);
             stmt.setString(2, gameTitle);
-            stmt.executeQuery();
-
+            rs = stmt.executeQuery();
+            int game_id = -1;
+            while (rs.next()) {
+                System.out.println("Game price changed!");
+                game_id = rs.getInt(1);
+            }
+            if(game_id == -1) {
+                System.out.println("Error while editing the price");
+                developerOptions();
+            }
             developerOptions();
         }
         catch (Exception e) {
@@ -200,6 +226,7 @@ public class Developer extends Customer {
     private void addGame() {
         stmt = null;
         try {
+            System.out.println();
             System.out.println("Add new game");
             System.out.print("Game title: ");
             String gameTitle = makeNewTitle();
@@ -232,6 +259,7 @@ public class Developer extends Customer {
 
             int game_id = -1;
             while (rs.next()) {
+                System.out.println("Game added!");
                 game_id = rs.getInt(1);
             }
             if(game_id == -1) {
@@ -252,10 +280,11 @@ public class Developer extends Customer {
                     System.out.print("Genre id: ");
                     continue;
                 }
-                stmt = connection.prepareCall("{call insertGenre(?, ?)}");
+                stmt = connection.prepareCall("{call insertGameGenre(?, ?)}");
                 stmt.setInt(1, game_id);
                 stmt.setInt(2, temp);
                 stmt.executeQuery();
+                System.out.println("Game genre added!");
                 System.out.print("Genre id: ");
             }
             developerOptions();
