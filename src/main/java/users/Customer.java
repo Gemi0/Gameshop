@@ -257,7 +257,6 @@ public class Customer extends AbstractUser {
         }
     }
 
-    //TODO: TEST IT
     private void getUserGames() {
         try {
             System.out.println();
